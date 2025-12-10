@@ -50,6 +50,18 @@ npm run changelog:build
 npm run changelog:run:compiled
 ```
 
+### Run the live dashboard (PR → tweets)
+```bash
+# make sure .env has at least:
+# GITHUB_TOKEN=ghp_xxx
+# (leave GITHUB_REPOS empty to list all accessible repos, or set comma-separated repos)
+npm run server
+```
+
+- Opens on `http://localhost:3001`
+- Endpoints: `/api/repos`, `/api/tweets`, `/api/populate`
+- Use the dashboard to click ⚡ on a repo, watch progress, and view/generated tweets immediately
+
 ## Output
 
 The job generates:

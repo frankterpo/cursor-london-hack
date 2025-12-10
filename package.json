@@ -5,6 +5,7 @@
   "type": "module",
   "main": "dist/jobs/index.js",
   "scripts": {
+    "start": "npm run server",
     "changelog:run": "tsx src/jobs/index.ts",
     "changelog:reset": "tsx src/jobs/index.ts --reset",
     "changelog:clean": "tsx src/jobs/index.ts --reset --clean",
