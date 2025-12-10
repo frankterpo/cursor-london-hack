@@ -1,0 +1,42 @@
+{
+  "name": "specter-changelog-agent",
+  "version": "1.0.0",
+  "description": "Automated changelog generator for Specter using GitHub PRs and Cursor AI",
+  "type": "module",
+  "main": "dist/jobs/index.js",
+  "scripts": {
+    "changelog:run": "tsx src/jobs/index.ts",
+    "changelog:reset": "tsx src/jobs/index.ts --reset",
+    "changelog:clean": "tsx src/jobs/index.ts --reset --clean",
+    "changelog:help": "tsx src/jobs/index.ts --help",
+    "server": "tsx src/server/index.ts",
+    "dashboard": "npx serve -p 3000 .",
+    "changelog:build": "tsc -p tsconfig.json",
+    "changelog:run:compiled": "node dist/jobs/index.js",
+    "test": "vitest",
+    "test:watch": "vitest --watch"
+  },
+  "keywords": [
+    "changelog",
+    "github",
+    "cursor",
+    "ai"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@cursor-ai/january": "^0.1.0",
+    "date-fns": "^2.30.0",
+    "date-fns-tz": "^2.0.0",
+    "dotenv": "^16.4.5",
+    "undici": "^6.19.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0",
+    "@vitest/ui": "^1.2.0"
+  }
+}
+

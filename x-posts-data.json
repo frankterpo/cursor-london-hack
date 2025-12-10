@@ -1,0 +1,198 @@
+{
+  "generated": "2025-12-10T10:09:35.767Z",
+  "totalPosts": 24,
+  "prs": [
+    {
+      "prNumber": 31,
+      "repo": "frankterpo/specter_operator",
+      "author": "frankterpo",
+      "section": "Internal",
+      "htmlUrl": "https://github.com/frankterpo/specter_operator/pull/31",
+      "tweets": [
+        {
+          "tone": "refined",
+          "text": "We've shipped comprehensive automation improvements across our infrastructure stack.\n\nEnhanced invoice processing with automated EUR conversion, improved social media source tracking, and optimized S3 performance—delivering more accurate financial data and better monitoring capabilities.\n\nThanks to @frankterpo for orchestrating these system-wide upgrades.\n\ngithub.com/frankterpo/specter_operator/pull/31\n\n#Automation #FinTech #Infrastructure",
+          "charCount": 443
+        },
+        {
+          "tone": "silly",
+          "text": "🎉 When you update 5 submodules at once and somehow nothing breaks \n\n@frankterpo really said \"let's automate ALL the things\" and then actually did it 🤖✨\n\nInvoice extraction? ✅ \nSocial media counting? ✅\nS3 go brrrr? ✅\n\nThe automation overlords are pleased 📊🚀\n\ngithub.com/frankterpo/specter_operator/pull/31\n\n#AutomationNation #DevLife #ShippedIt",
+          "charCount": 347
+        },
+        {
+          "tone": "shitpost",
+          "text": "me: can we automate invoices?\n@frankterpo: hold my coffee\n\n*updates 5 submodules simultaneously*\n*invoice extraction goes brrrrr*\n*social media counting actually works*\n*S3 queries stop being slow*\n\nMANS REALLY SAID \"git submodule update --remote\" AND CALLED IT A DAY 💀\n\ncommit message: \"pretty much done with landscape end to end\"\n\nabsolute UNIT behavior\n\ngithub.com/frankterpo/specter_operator/pull/31\n\n#JustShipped #ChaosEngineering",
+          "charCount": 436
+        }
+      ]
+    },
+    {
+      "prNumber": 30,
+      "repo": "frankterpo/specter_operator",
+      "author": "frankterpo",
+      "section": "Internal",
+      "htmlUrl": "https://github.com/frankterpo/specter_operator/pull/30",
+      "tweets": [
+        {
+          "tone": "refined",
+          "text": "We've deployed enhanced automation capabilities across our member management and invoicing systems.\n\nKey improvements include automated member cleanup for capacity optimization, invoice processing V2 with bug fixes, and improved deal notification workflows.\n\nThanks to @frankterpo for these operational enhancements.\n\ngithub.com/frankterpo/specter_operator/pull/30\n\n#Automation #Operations #Engineering",
+          "charCount": 402
+        },
+        {
+          "tone": "silly",
+          "text": "🎉 When your automation literally Marie Kondo's your subscriber list\n\n\"Does this unsubscribed member spark joy?\" *deletes* ✨\n\n@frankterpo shipped invoice run V2 AND fixed the bug that was haunting our dreams 👻💸\n\nPlus deal notifications that actually notify people (revolutionary concept) 📧🚀\n\ngithub.com/frankterpo/specter_operator/pull/30\n\n#AutomationLife #BugSquashed #DevWin",
+          "charCount": 380
+        },
+        {
+          "tone": "shitpost",
+          "text": "me: why is our subscriber count stuck?\n@frankterpo: *deletes unsubscribed members*\nme: wait that's illegal\nfrankterpo: IT'S CALLED OPTIMIZATION\n\nALSO FIXED THE INVOICE BUG THAT WAS LITERALLY BREAKING EVERYTHING 💀\n\ncommit message: \"done with: i) V1 new monitor, ii) V1 new landscape, iii) V0.5 mafia\"\n\nV0.5 MAFIA??? MANS IS RUNNING A WHOLE OPERATION\n\ngithub.com/frankterpo/specter_operator/pull/30\n\nautomation goes brrrrr #JustShipped #ChaosEngineering",
+          "charCount": 452
+        }
+      ]
+    },
+    {
+      "prNumber": 29,
+      "repo": "frankterpo/specter_operator",
+      "author": "frankterpo",
+      "section": "Internal",
+      "htmlUrl": "https://github.com/frankterpo/specter_operator/pull/29",
+      "tweets": [
+        {
+          "tone": "refined",
+          "text": "We've enhanced our content automation capabilities with improved landscape generation and streamlined workflow management.\n\nLatest updates include automated content creation processes and optimized publishing workflows—enabling more efficient content operations at scale.\n\nThanks to @frankterpo for these content infrastructure improvements.\n\ngithub.com/frankterpo/specter_operator/pull/29\n\n#ContentAutomation #Infrastructure #Engineering",
+          "charCount": 438
+        },
+        {
+          "tone": "silly",
+          "text": "🎭 When your automation starts generating \"mafia pieces\" and you're like... should I be concerned? \n\n@frankterpo really said \"let's automate landscapes AND organized crime content\" 😂🏔️\n\nPlot twist: it's probably just really good at creating compelling narratives ✨📝🚀\n\ngithub.com/frankterpo/specter_operator/pull/29\n\n#AutomationGoneWild #ContentCreation #DevLife",
+          "charCount": 365
+        },
+        {
+          "tone": "shitpost",
+          "text": "me: what are you working on?\n@frankterpo: just automating some landscapes\nme: cool, like terrain generation?\nfrankterpo: ...and mafia pieces\nme: WHAT\nfrankterpo: CLEANED UP THE MAFIA FLOW TOO\n\ncommit message: \"Mafia v1\"\n\nBRO IS LITERALLY RUNNING A DIGITAL CRIME SYNDICATE THROUGH GITHUB 💀\n\n\"no changes to our code\" YEAH RIGHT, THE FBI GONNA BE KNOCKING\n\ngithub.com/frankterpo/specter_operator/pull/29\n\n#JustShipped #DefinitelyNotSus #MafiaV1",
+          "charCount": 442
+        }
+      ]
+    },
+    {
+      "prNumber": 28,
+      "repo": "frankterpo/specter_operator",
+      "author": "frankterpo",
+      "section": "Internal",
+      "htmlUrl": "https://github.com/frankterpo/specter_operator/pull/28",
+      "tweets": [
+        {
+          "tone": "refined",
+          "text": "We've upgraded our automation infrastructure with OpenAI API v1 integration and Python 3.9 compatibility.\n\nEnhanced build processes and improved API support ensure more reliable automation workflows and better maintainability moving forward.\n\nThanks to @frankterpo for these foundational improvements.\n\ngithub.com/frankterpo/specter_operator/pull/28\n\n#APIUpgrade #Infrastructure #Engineering",
+          "charCount": 391
+        },
+        {
+          "tone": "silly",
+          "text": "🤖 When you upgrade to OpenAI API v1 and Python 3.9 in one go like a absolute unit\n\nAlso casually moved \"mafia_core_scripts\" to \"mafia/build_engine\" because apparently we're running a VERY organized operation here 😂🔧\n\n@frankterpo said \"let's modernize our crime syndicate\" and I respect that ✨🚀\n\ngithub.com/frankterpo/specter_operator/pull/28\n\n#ModernMafia #APIUpgrade #DevLife #SuspiciouslyWellOrganized",
+          "charCount": 407
+        },
+        {
+          "tone": "shitpost",
+          "text": "me: we should upgrade to OpenAI v1\n@frankterpo: bet\nme: and maybe update python too\nfrankterpo: say less\nme: oh and can you organize the mafia scripts?\nfrankterpo: ALREADY MOVED THEM TO BUILD_ENGINE\n\nBRO REALLY SAID \"LEMME JUST CASUALLY RESTRUCTURE MY ENTIRE CRIMINAL ENTERPRISE\" 💀\n\ncommit: \"move mafia_core_scripts into mafia/build_engine\"\n\nTHE AUDACITY. THE ORGANIZATION. THE EFFICIENCY.\n\ngithub.com/frankterpo/specter_operator/pull/28\n\n#JustShipped #MafiaEngineering #SuspiciouslyProfessional",
+          "charCount": 496
+        }
+      ]
+    },
+    {
+      "prNumber": 27,
+      "repo": "frankterpo/specter_operator",
+      "author": "frankterpo",
+      "section": "Internal",
+      "htmlUrl": "https://github.com/frankterpo/specter_operator/pull/27",
+      "tweets": [
+        {
+          "tone": "refined",
+          "text": "We've enhanced our automation infrastructure with improved deal management and content processing capabilities.\n\nKey updates include stronger deal owner assignment logic, enhanced product mapping workflows, and streamlined file processing with HubSpot integration.\n\nThanks to @frankterpo for these operational improvements.\n\ngithub.com/frankterpo/specter_operator/pull/27\n\n#Automation #CRM #Operations",
+          "charCount": 401
+        },
+        {
+          "tone": "silly",
+          "text": "🎉 When you update 4 automation submodules and somehow don't break everything\n\n@frankterpo really said \"let's make deal owner assignment ROBUST\" and then committed it 3 times to make sure we got the message 😂📊\n\nAlso casually added a Google Apps Script blacklist because why not add some mystery ✨🔒\n\ngithub.com/frankterpo/specter_operator/pull/27\n\n#AutomationOverlord #DevLife #ShippedIt #RobustAF 🚀",
+          "charCount": 402
+        },
+        {
+          "tone": "shitpost",
+          "text": "me: can you fix deal owner assignment?\n@frankterpo: *commits 3 times*\nme: is it fixed?\nfrankterpo: MADE IT MORE ROBUST\nme: but does it work?\nfrankterpo: MADE IT MORE ROBUST AND TO ACTUALLY SET THE DEAL OWNER\n\nBRO REALLY SAID \"LEMME JUST IMPROVE THIS 5 DIFFERENT WAYS\" 💀\n\nalso casually added a BLACKLIST because apparently we're running WITNESS PROTECTION now\n\ngithub.com/frankterpo/specter_operator/pull/27\n\nthe commitment to ROBUST is unmatched #JustShipped #RobustGang",
+          "charCount": 471
+        }
+      ]
+    },
+    {
+      "prNumber": 2,
+      "repo": "frankterpo/ghost_automations",
+      "author": "frankterpo",
+      "section": "Internal",
+      "htmlUrl": "https://github.com/frankterpo/ghost_automations/pull/2",
+      "tweets": [
+        {
+          "tone": "refined",
+          "text": "We've optimized our O3 model testing infrastructure with enhanced batch processing capabilities.\n\nImproved prompt generation and web search integration now enable more efficient AI model evaluation workflows.\n\nThanks to @frankterpo for the implementation.\n\ngithub.com/frankterpo/ghost_automations/pull/2\n\n#AI #MachineLearning #Engineering",
+          "charCount": 338
+        },
+        {
+          "tone": "silly",
+          "text": "🤖 When your O3 model needs a glow-up but you're too lazy to rewrite everything\n\n@frankterpo said \"what if we just... batch process this?\" and somehow made it work ✨\n\n76 additions, 2 deletions = peak efficiency vibes 📊🚀\n\ngithub.com/frankterpo/ghost_automations/pull/2\n\n#JupyterLife #AIOptimization #ShippedIt 🎉",
+          "charCount": 313
+        },
+        {
+          "tone": "shitpost",
+          "text": "me: can we optimize the O3 prompts?\njupyter notebook: *crashes*\nme: can we optimize the O3 prompts?\njupyter notebook: *crashes again*\n\n@frankterpo: hold my coffee ☕\n\n*adds 76 lines of pure CHAOS*\n*somehow makes batch processing work*\n*exports to CSV like a responsible adult*\n\nTHE MADLAD ACTUALLY DID IT 💀\n\ngithub.com/frankterpo/ghost_automations/pull/2\n\npytest said it's fine so WE SHIP 🚀",
+          "charCount": 391
+        }
+      ]
+    },
+    {
+      "prNumber": 3,
+      "repo": "frankterpo/ghost_automations",
+      "author": "frankterpo",
+      "section": "New",
+      "htmlUrl": "https://github.com/frankterpo/ghost_automations/pull/3",
+      "tweets": [
+        {
+          "tone": "refined",
+          "text": "We've launched a unified build pipeline for our mafia analysis platform.\n\nThe new CLI orchestrates complete company network analysis workflows—from data export to AI-enhanced content generation—with configurable limits and caching capabilities.\n\nThanks to @frankterpo for the implementation.\n\ngithub.com/frankterpo/ghost_automations/pull/3\n\n#DataAnalysis #CLI #Automation",
+          "charCount": 371
+        },
+        {
+          "tone": "silly",
+          "text": "🕴️ When you name your project \"mafia\" and actually build something that could take over the world\n\n@frankterpo just dropped a whole CLI pipeline like it's nothing ✨\n\n10 new files, 222 additions, 0 deletions = chef's kiss perfection 👨‍🍳💋\n\nNow analyzing company networks with the power of friendship (and AI) 🤖📊\n\ngithub.com/frankterpo/ghost_automations/pull/3\n\n#MafiaLife #CLIGang #ShippedIt 🚀",
+          "charCount": 398
+        },
+        {
+          "tone": "shitpost",
+          "text": "me: we need to analyze corporate networks\n@frankterpo: say no more fam\n\n*creates entire mafia module*\n*adds 10 files*\n*names it literally \"mafia\"*\n*refuses to elaborate*\n\nPALANTIR TECHNOLOGIES BOUT TO GET THE FULL TREATMENT 💀\n\n> python -m mafia.build palantir-technologies --dry-run\n\nTHE AUDACITY. THE CHAOS. THE BEAUTIFUL MADNESS.\n\ngithub.com/frankterpo/ghost_automations/pull/3\n\nwe're not the FBI but we play one on localhost 🕵️‍♂️",
+          "charCount": 435
+        }
+      ]
+    },
+    {
+      "prNumber": 1,
+      "repo": "frankterpo/ghost_automations",
+      "author": "frankterpo",
+      "section": "Internal",
+      "htmlUrl": "https://github.com/frankterpo/ghost_automations/pull/1",
+      "tweets": [
+        {
+          "tone": "refined",
+          "text": "We've enhanced our automation infrastructure with new content generation capabilities.\n\nAdded comprehensive tooling for data analysis and content creation workflows—strengthening our internal automation pipeline.\n\nThanks to @frankterpo for the implementation.\n\ngithub.com/frankterpo/ghost_automations/pull/1\n\n#Automation #DataAnalysis #Engineering",
+          "charCount": 347
+        },
+        {
+          "tone": "silly",
+          "text": "👻 When your PR title is \"ghost updates\" but you drop 2,625 lines of pure chaos\n\n@frankterpo really said \"let me just casually add a whole notebook\" and called it a day 📊✨\n\nAlso committed a .DS_Store file like a true Mac user 🍎😅\n\nThe hottest picks generator is about to be FIRE 🔥🚀\n\ngithub.com/frankterpo/ghost_automations/pull/1\n\n#GhostMode #JupyterLife #ShippedIt",
+          "charCount": 369
+        },
+        {
+          "tone": "shitpost",
+          "text": "> be @frankterpo\n> open new PR\n> title: \"ghost updates\"\n> description: \"\"\n> drops 2,625 lines of jupyter notebook\n> commits .DS_Store like a CHAD\n> refuses to elaborate further\n> leaves\n\nTHE ABSOLUTE STATE OF COMMIT MESSAGES IN 2025 💀\n\n\"Add hottest_picks_generator.ipynb and update files\"\n\nWHAT FILES? WHICH UPDATES? WE'LL NEVER KNOW\n\ngithub.com/frankterpo/ghost_automations/pull/1\n\nthis is why we can't have nice git histories",
+          "charCount": 428
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐦 Tweet Generator Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #1e1e1e;
+      --bg-sidebar: #252526;
+      --bg-card: #2d2d2d;
+      --bg-hover: #37373d;
+      --bg-selected: #094771;
+      --border: #3c3c3c;
+      --text: #cccccc;
+      --text-bright: #e4e4e4;
+      --text-muted: #858585;
+      --accent-blue: #4fc1ff;
+      --accent-purple: #c586c0;
+      --accent-green: #4ec9b0;
+      --accent-yellow: #dcdcaa;
+      --accent-orange: #ce9178;
+      --tone-refined: #4fc1ff;
+      --tone-silly: #dcdcaa;
+      --tone-shitpost: #f14c4c;
+      --folder-color: #dcb67a;
+      --file-color: #519aba;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+      display: flex;
+    }
+
+    /* Sidebar - File Explorer */
+    .sidebar {
+      width: 300px;
+      min-width: 300px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+    }
+
+    .sidebar-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .file-tree {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+
+    /* Tree items - Cursor style */
+    .tree-item {
+      display: flex;
+      align-items: center;
+      padding: 4px 8px 4px 16px;
+      cursor: pointer;
+      font-size: 13px;
+      user-select: none;
+      transition: background 0.1s;
+      gap: 6px;
+      position: relative;
+    }
+
+    .tree-item:hover { background: var(--bg-hover); }
+    .tree-item.selected { background: var(--bg-selected); }
+
+    .tree-item .chevron {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.15s;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .tree-item .chevron.collapsed { transform: rotate(-90deg); }
+
+    .tree-item .icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tree-item.folder .icon { color: var(--folder-color); }
+    .tree-item.file .icon { color: var(--file-color); }
+
+    .tree-item .label {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .tree-item .badge {
+      background: var(--bg-hover);
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+
+    .tree-item .section-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-left: 4px;
+    }
+
+    .section-dot.new { background: var(--accent-green); }
+    .section-dot.improvements { background: var(--accent-blue); }
+    .section-dot.fixes { background: var(--accent-orange); }
+
+    /* Populate button on hover */
+    .tree-item.folder .populate-btn {
+      opacity: 0;
+      position: absolute;
+      right: 8px;
+      background: var(--accent-blue);
+      border: none;
+      color: var(--bg-dark);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      z-index: 10;
+    }
+
+    .tree-item.folder:hover .populate-btn {
+      opacity: 1;
+    }
+
+    .tree-item.folder .populate-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .tree-item.folder .populate-btn.loading {
+      background: var(--accent-purple);
+    }
+
+    .tree-item.folder .populate-btn.done {
+      background: var(--accent-green);
+    }
+
+    .tree-children {
+      display: none;
+    }
+
+    .tree-children.expanded {
+      display: block;
+    }
+
+    .tree-children .tree-item {
+      padding-left: 32px;
+    }
+
+    .tree-children .tree-children .tree-item {
+      padding-left: 48px;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .topbar {
+      background: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .breadcrumb span { color: var(--text-bright); }
+    .breadcrumb .separator { color: var(--text-muted); }
+
+    .topbar-actions {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+    }
+
+    .filter-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .filter-pill:hover { background: var(--bg-hover); }
+    .filter-pill.active {
+      background: var(--bg-selected);
+      border-color: var(--accent-blue);
+    }
+
+    .stats-bar {
+      padding: 8px 16px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 24px;
+      font-size: 12px;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+    }
+
+    .stat-item .value {
+      color: var(--text-bright);
+      font-weight: 600;
+    }
+
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    /* PR Detail */
+    .pr-detail { max-width: 800px; }
+
+    .pr-detail-header { margin-bottom: 24px; }
+
+    .pr-detail-header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-bright);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pr-detail-header h1 a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .pr-detail-header h1 a:hover { color: var(--accent-blue); }
+
+    .pr-meta-row {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .pr-meta-row span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .section-tag.new { background: rgba(78, 201, 176, 0.2); color: var(--accent-green); }
+    .section-tag.improvements { background: rgba(79, 193, 255, 0.2); color: var(--accent-blue); }
+    .section-tag.fixes { background: rgba(206, 145, 120, 0.2); color: var(--accent-orange); }
+
+    /* Tweet cards */
+    .tweets-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .tweet-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .tweet-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-sidebar);
+    }
+
+    .tone-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .tone-label.refined { color: var(--tone-refined); }
+    .tone-label.silly { color: var(--tone-silly); }
+    .tone-label.shitpost { color: var(--tone-shitpost); }
+
+    .tweet-content {
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: var(--text-bright);
+    }
+
+    .tweet-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-sidebar);
+    }
+
+    .char-count { font-size: 12px; color: var(--text-muted); }
+    .char-count.warning { color: var(--accent-yellow); }
+    .char-count.over { color: var(--tone-shitpost); }
+
+    .copy-btn {
+      background: var(--accent-blue);
+      border: none;
+      color: var(--bg-dark);
+      padding: 6px 16px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+
+    .copy-btn:hover { filter: brightness(1.1); }
+    .copy-btn.copied { background: var(--accent-green); }
+
+    /* Empty & loading states */
+    .empty-state, .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 40px;
+    }
+
+    .empty-state h2, .loading-state h2 {
+      color: var(--text-bright);
+      margin-bottom: 8px;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent-blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--accent-green);
+      color: var(--bg-dark);
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.2s ease;
+      z-index: 1000;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+    /* Progress Panel */
+    .progress-panel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--bg-sidebar);
+      border-top: 2px solid var(--accent-blue);
+      padding: 16px 24px;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+      z-index: 100;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+      max-height: 300px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .progress-panel.active {
+      transform: translateY(0);
+    }
+
+    /* Progress toggle (hourglass) */
+    .progress-toggle {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text);
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: all 0.15s ease;
+      z-index: 110;
+    }
+
+    .progress-toggle:hover {
+      background: var(--bg-hover);
+      color: var(--text-bright);
+      transform: translateY(-1px);
+    }
+
+    .progress-toggle.pulsing {
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(79, 193, 255, 0.4); }
+      70% { box-shadow: 0 0 0 12px rgba(79, 193, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(79, 193, 255, 0); }
+    }
+
+    .progress-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .progress-title {
+      font-weight: 600;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .progress-title .spinner {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      border-width: 2px;
+    }
+
+    .progress-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .progress-close:hover {
+      color: var(--text-bright);
+    }
+
+    .progress-content {
+      max-height: 150px;
+      overflow-y: auto;
+      margin-bottom: 8px;
+    }
+
+    .progress-item {
+      padding: 6px 0;
+      font-size: 12px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .progress-item .icon {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .progress-item.fetching { color: var(--accent-blue); }
+    .progress-item.pr { color: var(--text-bright); }
+    .progress-item.tweet { color: var(--accent-purple); padding-left: 24px; font-size: 11px; }
+    .progress-item.complete { color: var(--accent-green); font-weight: 600; }
+    .progress-item.error { color: var(--tone-shitpost); }
+
+    .progress-bar-container {
+      height: 4px;
+      background: var(--bg-card);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+      border-radius: 2px;
+      transition: width 0.3s ease;
+      background-size: 200% 100%;
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    .progress-stats {
+      display: flex;
+      gap: 16px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .progress-stats span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .progress-stats .value {
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar - File Explorer -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+      </svg>
+      EXPLORER
+    </div>
+
+    <div class="file-tree" id="fileTree">
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="topbar">
+      <div class="breadcrumb" id="breadcrumb">
+        <span>🐦 Tweet Generator</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="filter-pill active" data-filter="all">All</button>
+        <button class="filter-pill" data-filter="refined">👔 Pro</button>
+        <button class="filter-pill" data-filter="silly">🎪 Fun</button>
+        <button class="filter-pill" data-filter="shitpost">🔥 Chaos</button>
+      </div>
+    </div>
+
+    <div class="stats-bar" id="statsBar">
+      <div class="stat-item">Loading...</div>
+    </div>
+
+    <div class="content-area" id="contentArea">
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">✓ Copied to clipboard!</div>
+
+  <!-- Progress Panel -->
+  <div class="progress-panel" id="progressPanel">
+    <div class="progress-header">
+      <div class="progress-title">
+        <div class="spinner"></div>
+        <span id="progressTitle">Processing...</span>
+      </div>
+      <button class="progress-close" onclick="closeProgressPanel()">×</button>
+    </div>
+    <div class="progress-content" id="progressContent"></div>
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" id="progressBarFill" style="width: 0%"></div>
+    </div>
+    <div class="progress-stats" id="progressStats"></div>
+  </div>
+
+  <!-- Progress Toggle -->
+  <button class="progress-toggle" id="progressToggle" title="Show progress" onclick="toggleProgressPanel()">⌛</button>
+
+  <script>
+    const API_BASE = window.location.origin;
+    
+    let allRepos = [];
+    let tweetsData = { prs: [], totalPosts: 0 };
+    let selectedPr = null;
+    let toneFilter = 'all';
+    let expandedRepos = new Set();
+    let processingRepos = new Set();
+    let populateQueue = [];
+    let isPopulating = false;
+    let progressState = {
+      repo: null,
+      totalPrs: 0,
+      currentPr: 0,
+      tweetsGenerated: 0,
+      events: []
+    };
+
+    const icons = {
+      folder: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>`,
+      folderOpen: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>`,
+      file: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>`,
+      chevron: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>`
+    };
+
+    // Initialize
+    async function init() {
+      await Promise.all([loadRepos(), loadTweets()]);
+      renderFileTree();
+      renderStats();
+      renderWelcome();
+    }
+
+    async function loadRepos() {
+      try {
+        const res = await fetch(`${API_BASE}/api/repos`);
+        allRepos = await res.json();
+        allRepos.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+      } catch (err) {
+        console.error('Failed to load repos:', err);
+        allRepos = [];
+      }
+    }
+
+    async function loadTweets() {
+      try {
+        const res = await fetch(`${API_BASE}/api/tweets`);
+        tweetsData = await res.json();
+      } catch (err) {
+        tweetsData = { prs: [], totalPosts: 0 };
+      }
+    }
+
+    function renderStats() {
+      const reposWithTweets = [...new Set(tweetsData.prs.map(p => p.repo))];
+      document.getElementById('statsBar').innerHTML = `
+        <div class="stat-item"><span class="value">${allRepos.length}</span> repos available</div>
+        <div class="stat-item"><span class="value">${reposWithTweets.length}</span> repos populated</div>
+        <div class="stat-item"><span class="value">${tweetsData.prs.length}</span> PRs</div>
+        <div class="stat-item"><span class="value">${tweetsData.totalPosts}</span> tweets</div>
+      `;
+    }
+
+    function renderFileTree() {
+      // Group PRs by repo
+      const byRepo = new Map();
+      for (const pr of tweetsData.prs) {
+        if (!byRepo.has(pr.repo)) {
+          byRepo.set(pr.repo, []);
+        }
+        byRepo.get(pr.repo).push(pr);
+      }
+
+      // Get repos that have tweets
+      const reposWithTweets = Array.from(byRepo.keys());
+      
+      // Add repos that don't have tweets yet (from allRepos)
+      for (const repo of allRepos) {
+        if (!byRepo.has(repo.fullName)) {
+          byRepo.set(repo.fullName, []);
+        }
+      }
+
+      let html = '';
+
+      // Root folder
+      html += `
+        <div class="tree-item folder" onclick="selectRoot()">
+          <span class="icon">${icons.folder}</span>
+          <span class="label">🐦 All Tweets</span>
+          <span class="badge">${tweetsData.prs.length}</span>
+        </div>
+      `;
+
+      // Sort repos: ones with tweets first, then alphabetically
+      const sortedRepos = Array.from(byRepo.entries()).sort((a, b) => {
+        const aHasTweets = a[1].length > 0;
+        const bHasTweets = b[1].length > 0;
+        if (aHasTweets !== bHasTweets) {
+          return bHasTweets ? 1 : -1;
+        }
+        return a[0].localeCompare(b[0]);
+      });
+
+      // Repos as folders
+      for (const [repoFullName, prs] of sortedRepos) {
+        const isExpanded = expandedRepos.has(repoFullName);
+        const repoName = repoFullName.split('/')[1] || repoFullName;
+        const hasTweets = prs.length > 0;
+        const isProcessing = processingRepos.has(repoFullName);
+        const repoInfo = allRepos.find(r => r.fullName === repoFullName);
+
+        html += `
+          <div class="tree-item folder" data-repo="${repoFullName}">
+            <span class="chevron ${isExpanded ? '' : 'collapsed'}" onclick="event.stopPropagation(); toggleRepo('${repoFullName}')">${icons.chevron}</span>
+            <span class="icon" onclick="toggleRepo('${repoFullName}')">${isExpanded ? icons.folderOpen : icons.folder}</span>
+            <span class="label" onclick="toggleRepo('${repoFullName}')">${repoName}</span>
+            ${hasTweets ? `<span class="badge">${prs.length}</span>` : ''}
+            <button class="populate-btn ${isProcessing ? 'loading' : ''} ${hasTweets ? 'done' : ''}" 
+                    onclick="event.stopPropagation(); enqueuePopulate('${repoFullName}')" 
+                    ${isProcessing ? 'disabled' : ''}
+                    title="${hasTweets ? 'Refresh tweets' : 'Generate tweets'}">
+              ${isProcessing ? '⏳' : hasTweets ? '🔄' : '⚡'}
+            </button>
+          </div>
+          <div class="tree-children ${isExpanded ? 'expanded' : ''}" data-repo-children="${repoFullName}">
+        `;
+
+        // PRs as files
+        if (hasTweets) {
+          for (const pr of prs.sort((a, b) => b.prNumber - a.prNumber)) {
+            const isSelected = selectedPr?.prNumber === pr.prNumber && selectedPr?.repo === pr.repo;
+            const sectionClass = pr.section.toLowerCase();
+            
+            html += `
+              <div class="tree-item file ${isSelected ? 'selected' : ''}" 
+                   onclick="selectPr('${pr.repo}', ${pr.prNumber})">
+                <span class="icon">${icons.file}</span>
+                <span class="label">PR #${pr.prNumber}</span>
+                <span class="section-dot ${sectionClass}"></span>
+              </div>
+            `;
+          }
+        } else {
+          html += `
+            <div class="tree-item" style="padding-left: 32px; color: var(--text-muted); font-size: 11px; cursor: default;">
+              No tweets yet. Click ⚡ to populate.
+            </div>
+          `;
+        }
+
+        html += `</div>`;
+      }
+
+      document.getElementById('fileTree').innerHTML = html;
+    }
+
+    function toggleRepo(repo) {
+      if (expandedRepos.has(repo)) {
+        expandedRepos.delete(repo);
+      } else {
+        expandedRepos.add(repo);
+      }
+      renderFileTree();
+    }
+
+    function selectRoot() {
+      selectedPr = null;
+      renderFileTree();
+      renderWelcome();
+      updateBreadcrumb(['🐦 Tweet Generator']);
+    }
+
+    function selectPr(repo, prNumber) {
+      const pr = tweetsData.prs.find(p => p.repo === repo && p.prNumber === prNumber);
+      if (!pr) return;
+      
+      selectedPr = pr;
+      
+      // Auto-expand the repo
+      expandedRepos.add(repo);
+      
+      renderFileTree();
+      renderPrDetail(pr);
+      updateBreadcrumb([repo.split('/')[1], `PR #${prNumber}`]);
+    }
+
+    function enqueuePopulate(repoFullName) {
+      populateQueue.push(repoFullName);
+      showToast(`Queued ${repoFullName}`);
+      renderFileTree();
+      if (!isPopulating) {
+        processPopulateQueue();
+      }
+    }
+
+    async function processPopulateQueue() {
+      if (isPopulating) return;
+      isPopulating = true;
+
+      while (populateQueue.length > 0) {
+        const repoFullName = populateQueue.shift();
+        processingRepos.add(repoFullName);
+        renderFileTree();
+
+        // Reset progress state
+        progressState = {
+          repo: repoFullName,
+          totalPrs: 0,
+          currentPr: 0,
+          tweetsGenerated: 0,
+          events: []
+        };
+
+        // Show progress panel
+        showProgressPanel(repoFullName);
+        updateProgressToggle();
+
+        try {
+          const res = await fetch(`${API_BASE}/api/populate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ repo: repoFullName })
+          });
+
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+          }
+
+          const reader = res.body?.getReader();
+          const decoder = new TextDecoder();
+
+          if (!reader) {
+            throw new Error('Stream not supported');
+          }
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n');
+
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                try {
+                  const event = JSON.parse(line.slice(6));
+                  handleProgressEvent(event);
+                } catch (e) {
+                  console.error('Failed to parse event:', e);
+                }
+              }
+            }
+          }
+
+          // Final update
+          await loadTweets();
+          renderStats();
+          expandedRepos.add(repoFullName);
+          renderFileTree();
+
+        } catch (err) {
+          addProgressEvent('error', `Failed: ${err.message}`);
+          showToast(`❌ Failed: ${err.message}`);
+        }
+
+        processingRepos.delete(repoFullName);
+        renderFileTree();
+      }
+
+      isPopulating = false;
+      updateProgressToggle();
+    }
+
+    function showProgressPanel(repo) {
+      const panel = document.getElementById('progressPanel');
+      const title = document.getElementById('progressTitle');
+      title.textContent = `Processing ${repo.split('/')[1]}...`;
+      panel.classList.add('active');
+      document.getElementById('progressContent').innerHTML = '';
+      document.getElementById('progressBarFill').style.width = '0%';
+    }
+
+    function closeProgressPanel() {
+      document.getElementById('progressPanel').classList.remove('active');
+      updateProgressToggle();
+    }
+
+    function toggleProgressPanel() {
+      const panel = document.getElementById('progressPanel');
+      if (panel.classList.contains('active')) {
+        closeProgressPanel();
+      } else {
+        panel.classList.add('active');
+      }
+    }
+
+    function handleProgressEvent(event) {
+      progressState.events.push(event);
+
+      switch (event.type) {
+        case 'start':
+          addProgressEvent('start', event.message);
+          break;
+        case 'fetching':
+          if (event.totalPrs) {
+            progressState.totalPrs = event.totalPrs;
+            updateProgressBar();
+          }
+          addProgressEvent('fetching', event.message);
+          break;
+        case 'pr':
+          if (event.prIndex && event.totalPrs) {
+            progressState.currentPr = event.prIndex;
+            updateProgressBar();
+          }
+          addProgressEvent('pr', `PR #${event.prNumber}: ${event.message}`);
+          break;
+        case 'tweet':
+          addProgressEvent('tweet', `  → Generating ${event.tone} tweet...`);
+          break;
+        case 'complete':
+          progressState.currentPr = event.totalPrs || progressState.totalPrs;
+          progressState.tweetsGenerated = event.tweetsGenerated || 0;
+          updateProgressBar();
+          addProgressEvent('complete', `✅ ${event.message}`);
+          // Refresh data immediately so new tweets show without waiting for stream end
+          loadTweets().then(() => {
+            renderStats();
+            expandedRepos.add(progressState.repo);
+            renderFileTree();
+            if (selectedPr) {
+              const pr = tweetsData.prs.find(p => p.repo === selectedPr.repo && p.prNumber === selectedPr.prNumber);
+              if (pr) renderPrDetail(pr);
+            }
+          });
+          setTimeout(() => {
+            closeProgressPanel();
+            showToast(`✓ Generated ${event.tweetsGenerated} tweets for ${event.prsProcessed} PRs`);
+          }, 2000);
+          break;
+        case 'error':
+          addProgressEvent('error', `❌ ${event.error || event.message}`);
+          break;
+        case 'done':
+          // Final completion
+          break;
+      }
+
+      updateProgressStats();
+      updateProgressToggle();
+    }
+
+    function addProgressEvent(type, message) {
+      const content = document.getElementById('progressContent');
+      const item = document.createElement('div');
+      item.className = `progress-item ${type}`;
+      
+      const icon = type === 'complete' ? '✓' : 
+                   type === 'error' ? '❌' :
+                   type === 'tweet' ? '🎨' :
+                   type === 'pr' ? '📝' : '⏳';
+      
+      item.innerHTML = `<span class="icon">${icon}</span><span>${escapeHtml(message)}</span>`;
+      content.appendChild(item);
+      content.scrollTop = content.scrollHeight;
+    }
+
+    function updateProgressBar() {
+      if (progressState.totalPrs === 0) return;
+      const percent = (progressState.currentPr / progressState.totalPrs) * 100;
+      document.getElementById('progressBarFill').style.width = `${Math.min(percent, 100)}%`;
+    }
+
+    function updateProgressStats() {
+      const stats = document.getElementById('progressStats');
+      stats.innerHTML = `
+        <span>PRs: <span class="value">${progressState.currentPr}/${progressState.totalPrs || '?'}</span></span>
+        <span>Tweets: <span class="value">${progressState.tweetsGenerated}</span></span>
+        <span>Events: <span class="value">${progressState.events.length}</span></span>
+        <span>Queue: <span class="value">${populateQueue.length}</span></span>
+      `;
+    }
+
+    function updateProgressToggle() {
+      const toggle = document.getElementById('progressToggle');
+      const hasActivity = progressState.events.length > 0 || isPopulating || populateQueue.length > 0;
+      if (hasActivity) {
+        toggle.classList.add('pulsing');
+        toggle.title = populateQueue.length > 0
+          ? `Show progress (queue: ${populateQueue.length})`
+          : 'Show progress (activity)';
+      } else {
+        toggle.classList.remove('pulsing');
+        toggle.title = 'Show progress';
+      }
+    }
+
+    function updateBreadcrumb(parts) {
+      document.getElementById('breadcrumb').innerHTML = parts
+        .map((p, i) => `<span>${p}</span>${i < parts.length - 1 ? '<span class="separator">/</span>' : ''}`)
+        .join('');
+    }
+
+    function renderWelcome() {
+      document.getElementById('contentArea').innerHTML = `
+        <div class="pr-detail">
+          <div class="pr-detail-header">
+            <h1>🐦 Tweet Generator Dashboard</h1>
+            <p style="color: var(--text-muted); margin-top: 8px;">
+              Your GitHub → Content Generator
+            </p>
+          </div>
+          <div style="background: var(--bg-card); border-radius: 8px; padding: 20px; margin-top: 20px;">
+            <h3 style="margin-bottom: 12px;">Quick Start</h3>
+            <ol style="color: var(--text-muted); padding-left: 20px; line-height: 2;">
+              <li>Browse repos in the sidebar (folder structure)</li>
+              <li>Click <strong>⚡</strong> button on a repo to generate tweets</li>
+              <li>Expand repo folders to see PRs (files)</li>
+              <li>Click any PR to view all 3 tone variations</li>
+            </ol>
+          </div>
+          ${tweetsData.prs.length > 0 ? `
+            <div style="margin-top: 24px;">
+              <h3 style="margin-bottom: 12px;">Recent Tweets</h3>
+              <div class="tweets-section">
+                ${tweetsData.prs.slice(0, 3).map(pr => `
+                  <div class="tweet-card" style="cursor: pointer;" onclick="selectPr('${pr.repo}', ${pr.prNumber})">
+                    <div class="tweet-card-header">
+                      <span>📁 ${pr.repo.split('/')[1]} / PR #${pr.prNumber}</span>
+                      <span class="section-tag ${pr.section.toLowerCase()}">${pr.section}</span>
+                    </div>
+                    <div class="tweet-content" style="max-height: 80px; overflow: hidden;">
+                      ${escapeHtml(pr.tweets[0]?.text || 'No tweet')}
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    function renderPrDetail(pr) {
+      const filteredTweets = toneFilter === 'all' 
+        ? pr.tweets 
+        : pr.tweets.filter(t => t.tone === toneFilter);
+
+      document.getElementById('contentArea').innerHTML = `
+        <div class="pr-detail">
+          <div class="pr-detail-header">
+            <h1>
+              <a href="${pr.htmlUrl}" target="_blank">PR #${pr.prNumber}</a>
+              <span class="section-tag ${pr.section.toLowerCase()}">${pr.section}</span>
+            </h1>
+            <div class="pr-meta-row">
+              <span>📁 ${pr.repo}</span>
+              <span>👤 @${pr.author}</span>
+              <span>🔗 <a href="${pr.htmlUrl}" target="_blank" style="color: var(--accent-blue);">GitHub</a></span>
+            </div>
+          </div>
+          <div class="tweets-section">
+            ${filteredTweets.map(tweet => renderTweetCard(tweet, pr)).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTweetCard(tweet, pr) {
+      const charClass = tweet.charCount > 280 ? (tweet.charCount > 400 ? 'over' : 'warning') : '';
+      const toneEmoji = tweet.tone === 'refined' ? '👔' : tweet.tone === 'silly' ? '🎪' : '🔥';
+      const toneLabel = tweet.tone === 'refined' ? 'Professional' : tweet.tone === 'silly' ? 'Playful' : 'Shitpost';
+      
+      return `
+        <div class="tweet-card">
+          <div class="tweet-card-header">
+            <div class="tone-label ${tweet.tone}">
+              <span>${toneEmoji}</span> ${toneLabel}
+            </div>
+          </div>
+          <div class="tweet-content">${escapeHtml(tweet.text)}</div>
+          <div class="tweet-card-footer">
+            <span class="char-count ${charClass}">${tweet.charCount} chars</span>
+            <button class="copy-btn" onclick="copyTweet(this, '${tweet.tone}', '${pr.repo}', ${pr.prNumber})">
+              📋 Copy
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    async function copyTweet(btn, tone, repo, prNumber) {
+      const pr = tweetsData.prs.find(p => p.repo === repo && p.prNumber === prNumber);
+      const tweet = pr.tweets.find(t => t.tone === tone);
+      
+      try {
+        await navigator.clipboard.writeText(tweet.text);
+        btn.textContent = '✓ Copied!';
+        btn.classList.add('copied');
+        showToast('✓ Copied to clipboard!');
+        setTimeout(() => {
+          btn.innerHTML = '📋 Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      } catch (err) {
+        console.error('Copy failed:', err);
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // Filter buttons
+    document.querySelectorAll('.filter-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        toneFilter = btn.dataset.filter;
+        if (selectedPr) renderPrDetail(selectedPr);
+      });
+    });
+
+    // Initialize
+    init();
+  </script>
+</body>
+</html>
