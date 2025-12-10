@@ -2,6 +2,8 @@
 
 Automated changelog generator that fetches merged GitHub PRs, summarizes them using AI (Cursor SDK), and formats them according to Specter's style guides.
 
+![Dashboard preview](assets/dashboard.png)
+
 ## Setup
 
 1. **Install dependencies:**
