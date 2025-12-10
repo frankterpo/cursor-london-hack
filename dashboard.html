@@ -912,48 +912,12 @@
         updateProgressToggle();
 
         try {
-          const res = await fetch(`${API_BASE}/api/populate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ repo: repoFullName })
-          });
-
-          if (!res.ok) {
-            throw new Error(`HTTP ${res.status}`);
-          }
-
-          const reader = res.body?.getReader();
-          const decoder = new TextDecoder();
-
-          if (!reader) {
-            throw new Error('Stream not supported');
-          }
-
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-
-            const chunk = decoder.decode(value);
-            const lines = chunk.split('\n');
-
-            for (const line of lines) {
-              if (line.startsWith('data: ')) {
-                try {
-                  const event = JSON.parse(line.slice(6));
-                  handleProgressEvent(event);
-                } catch (e) {
-                  console.error('Failed to parse event:', e);
-                }
-              }
-            }
-          }
-
+          await populateOnceWithRetry(repoFullName, 3);
           // Final update
           await loadTweets();
           renderStats();
           expandedRepos.add(repoFullName);
           renderFileTree();
-
         } catch (err) {
           addProgressEvent('error', `Failed: ${err.message}`);
           showToast(`❌ Failed: ${err.message}`);
@@ -965,6 +929,61 @@
 
       isPopulating = false;
       updateProgressToggle();
+    }
+
+    async function populateOnceWithRetry(repoFullName, attempts = 2, delayMs = 800) {
+      let lastErr;
+      for (let i = 1; i <= attempts; i++) {
+        try {
+          await populateOnce(repoFullName);
+          return;
+        } catch (err) {
+          lastErr = err;
+          const isNetwork = /Failed to fetch|NetworkError|TypeError/i.test(err.message);
+          if (!isNetwork || i === attempts) throw err;
+          addProgressEvent('error', `Retrying (${i}/${attempts}) after network drop...`);
+          await new Promise(res => setTimeout(res, delayMs * i));
+        }
+      }
+      throw lastErr;
+    }
+
+    async function populateOnce(repoFullName) {
+      const res = await fetch(`${API_BASE}/api/populate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ repo: repoFullName })
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        throw new Error('Stream not supported');
+      }
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const event = JSON.parse(line.slice(6));
+              handleProgressEvent(event);
+            } catch (e) {
+              console.error('Failed to parse event:', e);
+            }
+          }
+        }
+      }
     }
 
     function showProgressPanel(repo) {
